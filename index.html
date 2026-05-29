@@ -1,171 +1,1081 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Simulación de Cola - Mundial Qatar 2022</title>
-<style>
-:root{--p:#7a1231;--pd:#4c0b1e;--g:#667085;--b:#f5f7fb;--l:#e4e7ec;--a:#c79a3b}
-*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}body{margin:0;background:var(--b);color:#132238}
-header{background:linear-gradient(135deg,var(--pd),var(--p));color:white;text-align:center;padding:30px 16px}
-header h1{margin:0 0 8px;font-size:30px}header p{margin:0;opacity:.94}
-main{width:min(1240px,94%);margin:22px auto 40px}.noteTop{background:#fff4d6;border:1px solid #f1d28a;border-radius:14px;padding:14px 16px;margin-bottom:18px;color:#664d03;font-size:14px;line-height:1.45}
-.grid{display:grid;grid-template-columns:.95fr 1.25fr;gap:18px;align-items:start}.card{background:white;border:1px solid var(--l);border-radius:18px;padding:18px;box-shadow:0 8px 24px rgba(16,24,40,.06)}
-h2{margin:0 0 12px;color:var(--pd);font-size:21px}h3{margin:18px 0 9px;color:var(--pd);font-size:16px}
-p.desc{line-height:1.58;color:var(--g);font-size:14px;margin:0}.form{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:10px}
-label{font-size:13px;color:var(--g);display:block;margin-bottom:5px}input,select{width:100%;padding:10px;border:1px solid var(--l);border-radius:11px;font-size:14px;background:white}
-input:focus,select:focus{outline:2px solid #eab7c9;border-color:var(--p)}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
-button{border:0;border-radius:11px;padding:11px 15px;background:var(--p);color:white;cursor:pointer;font-weight:bold}button.sec{background:#344054}button.gold{background:var(--a);color:#1f1600}
-.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:4px 0 16px}.metric{background:#fbe8ef;border:1px solid #f3c7d6;border-radius:15px;padding:14px}
-.metric span{display:block;font-size:12px;color:var(--g);margin-bottom:5px}.metric strong{font-size:21px;color:var(--pd)}
-.tableWrap{width:100%;overflow-x:auto;margin-top:14px;border:1px solid var(--l);border-radius:14px}table{width:100%;min-width:760px;border-collapse:collapse;background:white}
-th,td{padding:10px;border-bottom:1px solid var(--l);text-align:center;font-size:13px}th{background:#fafafa;color:#344054}.status{padding:12px 14px;border-radius:12px;font-weight:bold;margin-top:14px;line-height:1.35}
-.ok{background:#dcfae6;color:#067647}.warn{background:#fef0c7;color:#b54708}.bad{background:#fee4e2;color:#b42318}
-.bars{display:grid;gap:14px;margin-top:16px}.barRow{display:grid;grid-template-columns:170px 1fr 74px;gap:10px;align-items:center;font-size:13px}
-.track{height:17px;background:#eef2f6;border:1px solid var(--l);border-radius:20px;overflow:hidden}.fill{height:100%;width:0;background:var(--p);transition:.25s}.fill.alt{background:var(--a)}
-.pill{display:inline-block;background:#eef4ff;color:#1849a9;border:1px solid #c7d7fe;padding:5px 9px;border-radius:999px;font-size:12px;margin:8px 4px 0 0;font-weight:bold}
-.small{font-size:13px;color:var(--g);line-height:1.45;margin-top:10px}.err{color:#b42318}
-footer{text-align:center;color:var(--g);padding:24px;font-size:13px}
-@media(max-width:980px){.grid{grid-template-columns:1fr}.summary{grid-template-columns:1fr 1fr}}@media(max-width:620px){header h1{font-size:23px}.form,.summary{grid-template-columns:1fr}.barRow{grid-template-columns:1fr}}
-@media print{header,.actions,.noteTop{display:none}body{background:white}main{width:100%;margin:0}.card{box-shadow:none;page-break-inside:avoid}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulación Mundial 48 Equipos</title>
+
+  <style>
+    :root {
+      --bg: #f4f6fb;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #667085;
+      --line: #e4e7ec;
+      --primary: #0b3b75;
+      --primary2: #1257a8;
+      --soft: #eaf2ff;
+      --gold: #c79a3b;
+      --ok: #067647;
+      --warn: #b54708;
+      --bad: #b42318;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      color: white;
+      text-align: center;
+      padding: 30px 16px;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+    }
+
+    header p {
+      margin: 0;
+      opacity: 0.94;
+    }
+
+    main {
+      width: min(1260px, 94%);
+      margin: 22px auto 42px;
+    }
+
+    .notice {
+      background: #fff4d6;
+      border: 1px solid #f2d58d;
+      color: #664d03;
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 18px;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 0.95fr 1.25fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(16, 24, 40, 0.06);
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      color: var(--primary);
+      font-size: 21px;
+    }
+
+    h3 {
+      margin: 18px 0 9px;
+      color: var(--primary);
+      font-size: 16px;
+    }
+
+    .desc {
+      line-height: 1.58;
+      color: var(--muted);
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .form {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    label {
+      font-size: 13px;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      font-size: 14px;
+      background: white;
+      color: var(--text);
+    }
+
+    textarea {
+      min-height: 230px;
+      resize: vertical;
+      font-family: Consolas, monospace;
+      line-height: 1.35;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: 2px solid #b8d3ff;
+      border-color: var(--primary2);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 11px;
+      padding: 11px 15px;
+      background: var(--primary2);
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button.secondary {
+      background: #344054;
+    }
+
+    button.gold {
+      background: var(--gold);
+      color: #1f1600;
+    }
+
+    button:hover {
+      filter: brightness(0.93);
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 4px 0 16px;
+    }
+
+    .metric {
+      background: var(--soft);
+      border: 1px solid #c7d7fe;
+      border-radius: 15px;
+      padding: 14px;
+    }
+
+    .metric span {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+
+    .metric strong {
+      font-size: 21px;
+      color: var(--primary);
+    }
+
+    .status {
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-weight: bold;
+      margin-top: 14px;
+      line-height: 1.35;
+    }
+
+    .ok {
+      background: #dcfae6;
+      color: var(--ok);
+    }
+
+    .warn {
+      background: #fef0c7;
+      color: var(--warn);
+    }
+
+    .bad {
+      background: #fee4e2;
+      color: var(--bad);
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      margin-top: 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid var(--line);
+      text-align: center;
+      font-size: 13px;
+    }
+
+    th {
+      background: #fafafa;
+      color: #344054;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .pill {
+      display: inline-block;
+      background: #eef4ff;
+      color: #1849a9;
+      border: 1px solid #c7d7fe;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      margin: 8px 4px 0 0;
+      font-weight: bold;
+    }
+
+    .bars {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 180px 1fr 90px;
+      gap: 10px;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .track {
+      height: 18px;
+      background: #eef2f6;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .fill {
+      height: 100%;
+      width: 0;
+      background: var(--primary2);
+      transition: 0.25s;
+    }
+
+    .small {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.45;
+      margin-top: 10px;
+    }
+
+    .error {
+      color: var(--bad);
+      font-weight: bold;
+    }
+
+    .group-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .group-box {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+      background: white;
+    }
+
+    .group-box h4 {
+      margin: 0 0 8px;
+      color: var(--primary);
+    }
+
+    .team-line {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      border-bottom: 1px dashed #edf0f5;
+      font-size: 13px;
+    }
+
+    .team-line:last-child {
+      border-bottom: 0;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      padding: 24px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 1050px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .summary {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .group-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      header h1 {
+        font-size: 23px;
+      }
+
+      .form,
+      .summary,
+      .group-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .bar-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
+
 <body>
-<header>
-<h1>Simulación de Línea de Espera: Mundial Qatar 2022</h1>
-<p>Ingreso de hinchas al estadio antes de un partido: comparación con 2 y 3 puntos de control.</p>
-</header>
-<main>
-<div class="noteTop"><b>Caso histórico:</b> se trabaja con el Mundial Qatar 2022 para que el informe no dependa de un evento futuro. Al cambiar cualquier dato, se actualizan automáticamente los indicadores, la tabla y la interpretación.</div>
-<section class="grid">
-<article class="card">
-<h2>Contexto del caso</h2>
-<p class="desc">El sistema representa una puerta de ingreso a un estadio durante los minutos previos a un partido del Mundial Qatar 2022. Cada hincha pasa por validación de entrada, control de seguridad y acceso por torniquete.</p>
-<span class="pill">Línea de espera</span><span class="pill">Múltiples servidores</span><span class="pill">Datos simulados</span>
-<h3>Datos generales</h3>
-<div class="form">
-<div><label>Tiempo observado (min)</label><input id="duration" class="auto" value="60"></div>
-<div><label>Cantidad de hinchas</label><input id="fans" class="auto" value="40"></div>
-<div><label>Semilla</label><input id="seed" class="auto" value="2022"></div>
-</div>
-<h3>Tiempos entre llegadas, distribución triangular</h3>
-<div class="form">
-<div><label>Mínimo</label><input id="arrMin" class="auto" value="0,50"></div>
-<div><label>Más probable</label><input id="arrMode" class="auto" value="1,35"></div>
-<div><label>Máximo</label><input id="arrMax" class="auto" value="2,20"></div>
-</div>
-<h3>Tiempos de servicio, distribución triangular</h3>
-<div class="form">
-<div><label>Mínimo</label><input id="servMin" class="auto" value="1,80"></div>
-<div><label>Más probable</label><input id="servMode" class="auto" value="2,50"></div>
-<div><label>Máximo</label><input id="servMax" class="auto" value="4,50"></div>
-</div>
-<h3>Escenarios</h3>
-<div class="form">
-<div><label>Escenario A</label><input id="serversA" class="auto" value="2"></div>
-<div><label>Escenario B</label><input id="serversB" class="auto" value="3"></div>
-<div><label>Actualización</label><select id="autoMode"><option value="on" selected>Automática</option><option value="off">Manual</option></select></div>
-</div>
-<div class="actions"><button onclick="runSimulation()">Actualizar simulación</button><button class="sec" onclick="loadBaseCase()">Restaurar datos base</button><button class="gold" onclick="window.print()">Imprimir / guardar PDF</button></div>
-<p class="small">La distribución triangular permite definir un valor mínimo, uno más probable y uno máximo. Es útil cuando se trabaja con datos simulados para un estudio académico.</p>
-<p id="errorBox" class="small err"></p>
-</article>
-<article class="card">
-<h2>Indicadores principales</h2>
-<div class="summary">
-<div class="metric"><span>λ llegada</span><strong id="lambda">0,00</strong></div>
-<div class="metric"><span>μ servicio</span><strong id="mu">0,00</strong></div>
-<div class="metric"><span>Hinchas simulados</span><strong id="nFans">0</strong></div>
-<div class="metric"><span>Prom. servicio</span><strong id="avgService">0,00</strong></div>
-</div>
-<h3>Comparación de escenarios</h3>
-<div class="tableWrap"><table><thead><tr><th>Indicador</th><th id="headA">k = 2 servidores</th><th id="headB">k = 3 servidores</th></tr></thead><tbody id="comparisonBody"></tbody></table></div>
-<div id="decisionBox"></div>
-<h3>Gráfico comparativo</h3>
-<div class="bars">
-<div class="barRow"><span id="labelWqA">Espera Wq A</span><div class="track"><div id="barWqA" class="fill"></div></div><b id="barWqAText">0,00</b></div>
-<div class="barRow"><span id="labelWqB">Espera Wq B</span><div class="track"><div id="barWqB" class="fill alt"></div></div><b id="barWqBText">0,00</b></div>
-<div class="barRow"><span id="labelRhoA">Utilización A</span><div class="track"><div id="barRhoA" class="fill"></div></div><b id="barRhoAText">0%</b></div>
-<div class="barRow"><span id="labelRhoB">Utilización B</span><div class="track"><div id="barRhoB" class="fill alt"></div></div><b id="barRhoBText">0%</b></div>
-</div>
-</article>
-</section>
-<section class="card" style="margin-top:18px">
-<h2>Tabla simulada de hinchas</h2>
-<p class="desc">La tabla corresponde al Escenario A. Al cambiar los datos, se recalculan llegada, servicio, servidor, inicio, final, espera y tiempo total.</p>
-<div class="tableWrap"><table><thead><tr><th>Hincha</th><th>Llegada</th><th>Servicio</th><th>Servidor</th><th>Inicio</th><th>Final</th><th>Espera Wq</th><th>Tiempo W</th></tr></thead><tbody id="dataBody"></tbody></table></div>
-</section>
-<section class="card" style="margin-top:18px">
-<h2>Interpretación automática para el informe</h2>
-<p id="interpretation" class="desc"></p>
-</section>
-</main>
-<footer>Simulación académica para Investigación Operativa II. Caso histórico: ingreso de hinchas durante el Mundial Qatar 2022.</footer>
-<script>
-let timer=null;
-const $=id=>document.getElementById(id);
-function n(id){return Number(String($(id).value).trim().replace(",","."))}
-function f(x,d=2){return Number.isFinite(x)?Number(x).toFixed(d).replace(".",","):"0,00"}
-function pct(x){return Number.isFinite(x)?(x*100).toFixed(2).replace(".",",")+"%":"0%"}
-function sr(seed){let x=Math.sin(seed)*10000;return x-Math.floor(x)}
-function rng(s){let seed=s;return()=>sr(++seed)}
-function tri(min,mode,max,r){let u=r(),c=(mode-min)/(max-min);return u<c?min+Math.sqrt(u*(max-min)*(mode-min)):max-Math.sqrt((1-u)*(max-min)*(max-mode))}
-function params(){
- let p={duration:n("duration"),fans:Math.floor(n("fans")),seed:n("seed"),arrMin:n("arrMin"),arrMode:n("arrMode"),arrMax:n("arrMax"),servMin:n("servMin"),servMode:n("servMode"),servMax:n("servMax"),serversA:n("serversA"),serversB:n("serversB")}, e=[];
- if(!(p.duration>0))e.push("El tiempo observado debe ser mayor a 0.");
- if(!(p.fans>0))e.push("La cantidad de hinchas debe ser mayor a 0.");
- if(!Number.isFinite(p.seed))e.push("La semilla debe ser numérica.");
- if(!(p.arrMin>0&&p.arrMode>=p.arrMin&&p.arrMax>=p.arrMode&&p.arrMax>p.arrMin))e.push("En llegadas debe cumplirse: mínimo ≤ más probable ≤ máximo.");
- if(!(p.servMin>0&&p.servMode>=p.servMin&&p.servMax>=p.servMode&&p.servMax>p.servMin))e.push("En servicio debe cumplirse: mínimo ≤ más probable ≤ máximo.");
- if(!(Number.isInteger(p.serversA)&&p.serversA>=1))e.push("Escenario A debe ser entero mayor o igual a 1.");
- if(!(Number.isInteger(p.serversB)&&p.serversB>=1))e.push("Escenario B debe ser entero mayor o igual a 1.");
- $("errorBox").textContent=e.join(" "); return e.length?null:p;
-}
-function makeData(p){
- let r=rng(p.seed), data=[], arrival=0;
- for(let i=1;i<=p.fans;i++){
-  if(i>1)arrival+=tri(p.arrMin,p.arrMode,p.arrMax,r);
-  let service=tri(p.servMin,p.servMode,p.servMax,r);
-  if(arrival<=p.duration)data.push({id:i,arrival,service});
- }
- return data;
-}
-function sim(data,k,duration){
- let end=Array(k).fill(0),rows=[],tw=0,tsys=0,ts=0;
- data.forEach(fan=>{
-  let s=0; for(let i=1;i<k;i++)if(end[i]<end[s])s=i;
-  let start=Math.max(fan.arrival,end[s]), finish=start+fan.service, wait=start-fan.arrival, sys=finish-fan.arrival;
-  end[s]=finish; tw+=wait; tsys+=sys; ts+=fan.service;
-  rows.push({id:fan.id,arrival:fan.arrival,service:fan.service,server:s+1,start,finish,wait,sys});
- });
- let m=data.length||1, avg=ts/m, lambda=data.length/duration, mu=avg?1/avg:0, wq=tw/m, w=tsys/m, lq=lambda*wq, l=lambda*w, rho=mu?lambda/(k*mu):0;
- return {k,rows,n:data.length,avg,lambda,mu,wq,w,lq,l,rho};
-}
-function render(A,B){
- $("lambda").textContent=f(A.lambda,4); $("mu").textContent=f(A.mu,4); $("nFans").textContent=A.n; $("avgService").textContent=f(A.avg,2);
- $("headA").textContent="k = "+A.k+" servidores"; $("headB").textContent="k = "+B.k+" servidores";
- let rows=[["Hinchas atendidos",A.n,B.n],["Espera promedio Wq (min)",f(A.wq,4),f(B.wq,4)],["Tiempo promedio W (min)",f(A.w,4),f(B.w,4)],["N° promedio en cola Lq",f(A.lq,4),f(B.lq,4)],["N° promedio en sistema L",f(A.l,4),f(B.l,4)],["Utilización ρ",pct(A.rho),pct(B.rho)]];
- $("comparisonBody").innerHTML=rows.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("");
- $("dataBody").innerHTML=A.rows.map(r=>`<tr><td>${r.id}</td><td>${f(r.arrival,2)}</td><td>${f(r.service,2)}</td><td>${r.server}</td><td>${f(r.start,2)}</td><td>${f(r.finish,2)}</td><td>${f(r.wait,2)}</td><td>${f(r.sys,2)}</td></tr>`).join("");
- let maxWq=Math.max(A.wq,B.wq,.01); $("barWqA").style.width=Math.min(100,A.wq/maxWq*100)+"%"; $("barWqB").style.width=Math.min(100,B.wq/maxWq*100)+"%"; $("barRhoA").style.width=Math.min(100,A.rho*100)+"%"; $("barRhoB").style.width=Math.min(100,B.rho*100)+"%";
- $("labelWqA").textContent="Espera Wq con k="+A.k; $("labelWqB").textContent="Espera Wq con k="+B.k; $("labelRhoA").textContent="Utilización k="+A.k; $("labelRhoB").textContent="Utilización k="+B.k;
- $("barWqAText").textContent=f(A.wq,2); $("barWqBText").textContent=f(B.wq,2); $("barRhoAText").textContent=(A.rho*100).toFixed(1).replace(".",",")+"%"; $("barRhoBText").textContent=(B.rho*100).toFixed(1).replace(".",",")+"%";
- let cls="ok", txt="";
- if(A.rho>=1){cls="bad";txt=`Conclusión: con ${A.k} servidores el sistema está saturado. Se recomienda aumentar los puntos de control.`}
- else if(A.rho>=.85&&B.wq<A.wq){cls="warn";txt=`Conclusión: con ${A.k} servidores el sistema funciona, pero está muy cargado. Conviene habilitar ${B.k} servidores en hora pico.`}
- else if(B.wq<A.wq){txt=`Conclusión: el escenario con ${B.k} servidores reduce la espera y puede usarse en momentos de mayor llegada.`}
- else{txt=`Conclusión: el escenario con ${A.k} servidores es suficiente para los datos ingresados.`}
- if(B.rho>=1){cls="bad";txt=`Conclusión: incluso con ${B.k} servidores el sistema se satura. Se debe aumentar capacidad o reducir tiempos de servicio.`}
- $("decisionBox").innerHTML=`<div class="status ${cls}">${txt}</div>`;
- let imp=A.wq===0?0:((A.wq-B.wq)/A.wq)*100;
- $("interpretation").textContent=`En la simulación del ingreso de hinchas durante un partido del Mundial Qatar 2022, el escenario con ${A.k} servidores presenta una espera promedio en cola Wq de ${f(A.wq,4)} minutos, mientras que el escenario con ${B.k} servidores presenta una espera promedio de ${f(B.wq,4)} minutos. La utilización del sistema pasa de ${pct(A.rho)} a ${pct(B.rho)}. La variación aproximada de la espera es de ${f(Math.abs(imp),2)}%. Con estos resultados, la decisión operativa recomendada es habilitar más puntos de control en periodos de mayor afluencia, evitando filas extensas y mejorando el flujo de ingreso al estadio.`;
-}
-function runSimulation(){let p=params(); if(!p)return; let d=makeData(p), A=sim(d,p.serversA,p.duration), B=sim(d,p.serversB,p.duration); render(A,B)}
-function schedule(){if($("autoMode").value!=="on")return; clearTimeout(timer); timer=setTimeout(runSimulation,160)}
-function loadBaseCase(){["duration","fans","seed","arrMin","arrMode","arrMax","servMin","servMode","servMax","serversA","serversB"].forEach((id,i)=>$(id).value=["60","40","2022","0,50","1,35","2,20","1,80","2,50","4,50","2","3"][i]);$("autoMode").value="on";runSimulation()}
-document.querySelectorAll(".auto").forEach(x=>{x.addEventListener("input",schedule);x.addEventListener("change",schedule)});
-$("autoMode").addEventListener("change",()=>{if($("autoMode").value==="on")runSimulation()});
-runSimulation();
-</script>
+  <header>
+    <h1>Simulación para determinar el campeón entre 48 equipos</h1>
+    <p>Modelo Monte Carlo del Mundial: fase de grupos, ronda de 32 y eliminación directa.</p>
+  </header>
+
+  <main>
+    <div class="notice">
+      <strong>Importante:</strong> este simulador es académico. No predice oficialmente el resultado real.
+      Usa niveles de rendimiento editables y números aleatorios para estimar qué equipos tendrían mayor probabilidad de salir campeones.
+    </div>
+
+    <section class="grid">
+      <article class="card">
+        <h2>Datos del modelo</h2>
+        <p class="desc">
+          El torneo se modela con 48 equipos distribuidos en 12 grupos de 4.
+          Avanzan los dos primeros de cada grupo y los ocho mejores terceros.
+          Luego se simula eliminación directa desde ronda de 32 hasta la final.
+        </p>
+
+        <span class="pill">48 equipos</span>
+        <span class="pill">12 grupos</span>
+        <span class="pill">Monte Carlo</span>
+        <span class="pill">Eliminación directa</span>
+
+        <h3>Parámetros</h3>
+        <div class="form">
+          <div>
+            <label>N° de simulaciones</label>
+            <input id="simCount" class="auto" value="1000" />
+          </div>
+          <div>
+            <label>Semilla</label>
+            <input id="seed" class="auto" value="2026" />
+          </div>
+          <div>
+            <label>Modo</label>
+            <select id="autoMode">
+              <option value="on" selected>Automático</option>
+              <option value="off">Manual</option>
+            </select>
+          </div>
+        </div>
+
+        <h3>Equipos y nivel</h3>
+        <p class="small">
+          Formato: <strong>Equipo,nivel</strong>. Deben existir 48 líneas.
+          El nivel puede estar entre 1 y 100.
+        </p>
+
+        <textarea id="teamsInput" class="auto">Argentina,94
+Francia,93
+Brasil,92
+Inglaterra,90
+España,89
+Portugal,88
+Países Bajos,87
+Alemania,87
+Bélgica,85
+Croacia,84
+Uruguay,84
+Colombia,83
+Italia,83
+Marruecos,82
+México,81
+Estados Unidos,80
+Suiza,80
+Dinamarca,79
+Japón,79
+Senegal,78
+Corea del Sur,77
+Ecuador,77
+Australia,76
+Canadá,76
+Serbia,75
+Polonia,75
+Suecia,74
+Noruega,74
+Turquía,73
+Austria,73
+Ghana,72
+Nigeria,72
+Camerún,71
+Costa Rica,70
+Chile,70
+Perú,69
+Paraguay,69
+Egipto,68
+Túnez,68
+Argelia,67
+Arabia Saudita,66
+Irán,66
+Qatar,65
+Nueva Zelanda,64
+Sudáfrica,64
+Panamá,63
+Jamaica,62
+Bolivia,61</textarea>
+
+        <div class="actions">
+          <button onclick="runSimulation()">Simular torneo</button>
+          <button class="secondary" onclick="loadBaseCase()">Restaurar datos base</button>
+          <button class="gold" onclick="window.print()">Imprimir / guardar PDF</button>
+        </div>
+
+        <p id="errorBox" class="small error"></p>
+      </article>
+
+      <article class="card">
+        <h2>Resultados principales</h2>
+
+        <div class="summary">
+          <div class="metric">
+            <span>Simulaciones</span>
+            <strong id="mSims">0</strong>
+          </div>
+          <div class="metric">
+            <span>Equipos válidos</span>
+            <strong id="mTeams">0</strong>
+          </div>
+          <div class="metric">
+            <span>Mayor prob.</span>
+            <strong id="mProb">0%</strong>
+          </div>
+          <div class="metric">
+            <span>Campeón más probable</span>
+            <strong id="mChampion">-</strong>
+          </div>
+        </div>
+
+        <h3>Top 10 candidatos al título</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Pos.</th>
+                <th>Equipo</th>
+                <th>Nivel</th>
+                <th>Veces campeón</th>
+                <th>Probabilidad</th>
+              </tr>
+            </thead>
+            <tbody id="rankingBody"></tbody>
+          </table>
+        </div>
+
+        <div id="decisionBox"></div>
+
+        <h3>Gráfico de probabilidad</h3>
+        <div id="bars" class="bars"></div>
+      </article>
+    </section>
+
+    <section class="card" style="margin-top:18px">
+      <h2>Último torneo simulado</h2>
+
+      <div class="summary">
+        <div class="metric">
+          <span>Campeón</span>
+          <strong id="lastChampion">-</strong>
+        </div>
+        <div class="metric">
+          <span>Subcampeón</span>
+          <strong id="lastRunner">-</strong>
+        </div>
+        <div class="metric">
+          <span>Semifinalistas</span>
+          <strong id="lastSemi">-</strong>
+        </div>
+        <div class="metric">
+          <span>Partidos por torneo</span>
+          <strong id="matchCount">104</strong>
+        </div>
+      </div>
+
+      <h3>Grupos generados</h3>
+      <div id="groupsBox" class="group-grid"></div>
+    </section>
+
+    <section class="card" style="margin-top:18px">
+      <h2>Interpretación automática para el informe</h2>
+      <p id="interpretation" class="desc"></p>
+    </section>
+  </main>
+
+  <footer>
+    Simulación académica para Investigación Operativa II.
+    Modelo Monte Carlo aplicado a un torneo de 48 equipos.
+  </footer>
+
+  <script>
+    let timer = null;
+
+    const $ = (id) => document.getElementById(id);
+
+    function num(id) {
+      return Number(String($(id).value).trim().replace(",", "."));
+    }
+
+    function pct(x) {
+      return Number.isFinite(x)
+        ? (x * 100).toFixed(2).replace(".", ",") + "%"
+        : "0%";
+    }
+
+    function makeRng(seed) {
+      let s = Math.floor(seed) % 2147483647;
+
+      if (s <= 0) {
+        s += 2147483646;
+      }
+
+      return function () {
+        s = (s * 16807) % 2147483647;
+        return (s - 1) / 2147483646;
+      };
+    }
+
+    function poisson(lambda, rng) {
+      lambda = Math.max(0.05, Math.min(lambda, 5.2));
+
+      const L = Math.exp(-lambda);
+      let k = 0;
+      let p = 1;
+
+      do {
+        k++;
+        p *= rng();
+      } while (p > L);
+
+      return k - 1;
+    }
+
+    function parseTeams() {
+      const lines = $("teamsInput")
+        .value
+        .split("\n")
+        .map((x) => x.trim())
+        .filter(Boolean);
+
+      const teams = [];
+      const errors = [];
+
+      lines.forEach((line, idx) => {
+        const parts = line.split(",");
+
+        if (parts.length < 2) {
+          errors.push("Línea " + (idx + 1) + " incompleta.");
+          return;
+        }
+
+        const name = parts[0].trim();
+        const strength = Number(String(parts[1]).trim().replace(",", "."));
+
+        if (!name || !Number.isFinite(strength)) {
+          errors.push("Línea " + (idx + 1) + " inválida.");
+          return;
+        }
+
+        teams.push({
+          name,
+          strength: Math.max(1, Math.min(100, strength))
+        });
+      });
+
+      return { teams, errors };
+    }
+
+    function shuffle(arr, rng) {
+      const a = arr.slice();
+
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+
+      return a;
+    }
+
+    function makeGroups(teams, rng) {
+      const shuffled = shuffle(teams, rng);
+      const groups = [];
+
+      for (let g = 0; g < 12; g++) {
+        groups.push(shuffled.slice(g * 4, g * 4 + 4));
+      }
+
+      return groups;
+    }
+
+    function expectedGoals(a, b) {
+      const diff = a.strength - b.strength;
+      const base = 1.35;
+
+      const egA = base * Math.exp(diff / 45);
+      const egB = base * Math.exp(-diff / 45);
+
+      return [
+        Math.max(0.25, Math.min(3.8, egA)),
+        Math.max(0.25, Math.min(3.8, egB))
+      ];
+    }
+
+    function playMatch(a, b, rng, allowDraw) {
+      const [egA, egB] = expectedGoals(a, b);
+
+      let ga = poisson(egA, rng);
+      let gb = poisson(egB, rng);
+      let winner = null;
+
+      if (ga > gb) {
+        winner = a;
+      } else if (gb > ga) {
+        winner = b;
+      } else if (!allowDraw) {
+        const pA = 1 / (1 + Math.exp(-(a.strength - b.strength) / 12));
+        winner = rng() < pA ? a : b;
+      }
+
+      return {
+        a,
+        b,
+        ga,
+        gb,
+        winner,
+        draw: ga === gb && allowDraw
+      };
+    }
+
+    function initTable(group) {
+      const table = {};
+
+      group.forEach((t) => {
+        table[t.name] = {
+          ...t,
+          pts: 0,
+          gf: 0,
+          ga: 0,
+          gd: 0,
+          wins: 0
+        };
+      });
+
+      return table;
+    }
+
+    function playGroup(group, rng) {
+      const table = initTable(group);
+
+      for (let i = 0; i < group.length; i++) {
+        for (let j = i + 1; j < group.length; j++) {
+          const m = playMatch(group[i], group[j], rng, true);
+
+          const A = table[group[i].name];
+          const B = table[group[j].name];
+
+          A.gf += m.ga;
+          A.ga += m.gb;
+
+          B.gf += m.gb;
+          B.ga += m.ga;
+
+          A.gd = A.gf - A.ga;
+          B.gd = B.gf - B.ga;
+
+          if (m.ga > m.gb) {
+            A.pts += 3;
+            A.wins += 1;
+          } else if (m.gb > m.ga) {
+            B.pts += 3;
+            B.wins += 1;
+          } else {
+            A.pts += 1;
+            B.pts += 1;
+          }
+        }
+      }
+
+      const standings = Object.values(table).sort((x, y) =>
+        y.pts - x.pts ||
+        y.gd - x.gd ||
+        y.gf - x.gf ||
+        y.wins - x.wins ||
+        y.strength - x.strength
+      );
+
+      return { standings };
+    }
+
+    function qualify(groups, rng) {
+      const qualified = [];
+      const thirds = [];
+      const groupResults = [];
+
+      groups.forEach((group) => {
+        const res = playGroup(group, rng);
+
+        groupResults.push(res.standings);
+
+        qualified.push(res.standings[0], res.standings[1]);
+        thirds.push(res.standings[2]);
+      });
+
+      thirds.sort((x, y) =>
+        y.pts - x.pts ||
+        y.gd - x.gd ||
+        y.gf - x.gf ||
+        y.wins - x.wins ||
+        y.strength - x.strength
+      );
+
+      qualified.push(...thirds.slice(0, 8));
+
+      return { qualified, groupResults };
+    }
+
+    function playKnockout(qualified, rng) {
+      let alive = qualified.slice().sort((a, b) =>
+        b.pts - a.pts ||
+        b.gd - a.gd ||
+        b.gf - a.gf ||
+        b.strength - a.strength
+      );
+
+      let round32 = [];
+
+      for (let i = 0; i < 16; i++) {
+        round32.push([alive[i], alive[31 - i]]);
+      }
+
+      function playRound(pairs) {
+        const winners = [];
+
+        pairs.forEach((pair) => {
+          const m = playMatch(pair[0], pair[1], rng, false);
+          winners.push(m.winner);
+        });
+
+        return winners;
+      }
+
+      let winners32 = playRound(round32);
+
+      let pairs16 = [];
+      for (let i = 0; i < winners32.length; i += 2) {
+        pairs16.push([winners32[i], winners32[i + 1]]);
+      }
+
+      let winners16 = playRound(pairs16);
+
+      let pairs8 = [];
+      for (let i = 0; i < winners16.length; i += 2) {
+        pairs8.push([winners16[i], winners16[i + 1]]);
+      }
+
+      let winners8 = playRound(pairs8);
+
+      const semifinalists = winners8.map((x) => x.name);
+
+      let pairs4 = [];
+      for (let i = 0; i < winners8.length; i += 2) {
+        pairs4.push([winners8[i], winners8[i + 1]]);
+      }
+
+      let finalists = playRound(pairs4);
+
+      const finalMatch = playMatch(finalists[0], finalists[1], rng, false);
+      const champion = finalMatch.winner;
+      const runner = champion.name === finalists[0].name ? finalists[1] : finalists[0];
+
+      return {
+        champion,
+        runner,
+        semifinalists
+      };
+    }
+
+    function runOneTournament(teams, seedForGroups, rng) {
+      const groupRng = makeRng(seedForGroups);
+      const groups = makeGroups(teams, groupRng);
+
+      const { qualified, groupResults } = qualify(groups, rng);
+      const knockout = playKnockout(qualified, rng);
+
+      return {
+        groups,
+        groupResults,
+        ...knockout
+      };
+    }
+
+    function validate() {
+      const simCount = Math.floor(num("simCount"));
+      const seed = num("seed");
+      const parsed = parseTeams();
+      const errors = [...parsed.errors];
+
+      if (!Number.isFinite(simCount) || simCount < 1) {
+        errors.push("El número de simulaciones debe ser mayor a 0.");
+      }
+
+      if (simCount > 10000) {
+        errors.push("Para que no se vuelva lento, usa máximo 10000 simulaciones.");
+      }
+
+      if (!Number.isFinite(seed)) {
+        errors.push("La semilla debe ser numérica.");
+      }
+
+      if (parsed.teams.length !== 48) {
+        errors.push("Deben existir exactamente 48 equipos válidos. Actualmente hay " + parsed.teams.length + ".");
+      }
+
+      $("errorBox").textContent = errors.join(" ");
+
+      if (errors.length) {
+        return null;
+      }
+
+      return {
+        simCount,
+        seed,
+        teams: parsed.teams
+      };
+    }
+
+    function runSimulation() {
+      const p = validate();
+
+      if (!p) {
+        return;
+      }
+
+      const counts = {};
+      const strengthMap = {};
+
+      p.teams.forEach((t) => {
+        counts[t.name] = 0;
+        strengthMap[t.name] = t.strength;
+      });
+
+      const rng = makeRng(p.seed + 777);
+      let last = null;
+
+      for (let i = 0; i < p.simCount; i++) {
+        last = runOneTournament(p.teams, p.seed, rng);
+        counts[last.champion.name] += 1;
+      }
+
+      const ranking = Object.entries(counts)
+        .map(([name, count]) => ({
+          name,
+          count,
+          strength: strengthMap[name],
+          prob: count / p.simCount
+        }))
+        .sort((a, b) => b.count - a.count || b.strength - a.strength);
+
+      render(p, ranking, last);
+    }
+
+    function render(p, ranking, last) {
+      $("mSims").textContent = p.simCount;
+      $("mTeams").textContent = p.teams.length;
+      $("mProb").textContent = pct(ranking[0].prob);
+      $("mChampion").textContent = ranking[0].name;
+
+      $("rankingBody").innerHTML = ranking.slice(0, 10).map((r, i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td><strong>${r.name}</strong></td>
+          <td>${r.strength}</td>
+          <td>${r.count}</td>
+          <td>${pct(r.prob)}</td>
+        </tr>
+      `).join("");
+
+      const maxProb = Math.max(...ranking.slice(0, 10).map((r) => r.prob), 0.01);
+
+      $("bars").innerHTML = ranking.slice(0, 10).map((r) => `
+        <div class="bar-row">
+          <span>${r.name}</span>
+          <div class="track">
+            <div class="fill" style="width:${Math.max(2, r.prob / maxProb * 100)}%"></div>
+          </div>
+          <strong>${pct(r.prob)}</strong>
+        </div>
+      `).join("");
+
+      const top = ranking[0];
+
+      let cls = "ok";
+      let txt = `Resultado: el equipo con mayor frecuencia de campeonato fue ${top.name}, con una probabilidad simulada de ${pct(top.prob)}.`;
+
+      if (top.prob < 0.10) {
+        cls = "warn";
+        txt += " La probabilidad está distribuida entre varios equipos, por lo que el torneo presenta alta incertidumbre.";
+      } else {
+        txt += " Esto indica que, bajo los niveles ingresados, aparece como el candidato más fuerte del modelo.";
+      }
+
+      $("decisionBox").innerHTML = `<div class="status ${cls}">${txt}</div>`;
+
+      $("lastChampion").textContent = last.champion.name;
+      $("lastRunner").textContent = last.runner.name;
+      $("lastSemi").textContent = last.semifinalists.join(", ");
+      $("matchCount").textContent = "104";
+
+      $("groupsBox").innerHTML = last.groups.map((g, idx) => `
+        <div class="group-box">
+          <h4>Grupo ${String.fromCharCode(65 + idx)}</h4>
+          ${g.map((t) => `
+            <div class="team-line">
+              <span>${t.name}</span>
+              <strong>${t.strength}</strong>
+            </div>
+          `).join("")}
+        </div>
+      `).join("");
+
+      $("interpretation").textContent =
+        `Se ejecutaron ${p.simCount} simulaciones del torneo con 48 equipos. ` +
+        `El modelo distribuye a los equipos en 12 grupos de 4, clasifica a 32 equipos ` +
+        `y luego aplica eliminación directa hasta obtener un campeón. ` +
+        `El equipo con mayor frecuencia de campeonato fue ${top.name}, con ${top.count} campeonatos simulados ` +
+        `y una probabilidad de ${pct(top.prob)}. Este resultado no representa una predicción oficial, ` +
+        `sino una estimación generada a partir de los niveles asignados y de la variabilidad aleatoria del modelo.`;
+    }
+
+    function schedule() {
+      if ($("autoMode").value !== "on") {
+        return;
+      }
+
+      clearTimeout(timer);
+      timer = setTimeout(runSimulation, 500);
+    }
+
+    function loadBaseCase() {
+      $("simCount").value = "1000";
+      $("seed").value = "2026";
+
+      $("teamsInput").value = `Argentina,94
+Francia,93
+Brasil,92
+Inglaterra,90
+España,89
+Portugal,88
+Países Bajos,87
+Alemania,87
+Bélgica,85
+Croacia,84
+Uruguay,84
+Colombia,83
+Italia,83
+Marruecos,82
+México,81
+Estados Unidos,80
+Suiza,80
+Dinamarca,79
+Japón,79
+Senegal,78
+Corea del Sur,77
+Ecuador,77
+Australia,76
+Canadá,76
+Serbia,75
+Polonia,75
+Suecia,74
+Noruega,74
+Turquía,73
+Austria,73
+Ghana,72
+Nigeria,72
+Camerún,71
+Costa Rica,70
+Chile,70
+Perú,69
+Paraguay,69
+Egipto,68
+Túnez,68
+Argelia,67
+Arabia Saudita,66
+Irán,66
+Qatar,65
+Nueva Zelanda,64
+Sudáfrica,64
+Panamá,63
+Jamaica,62
+Bolivia,61`;
+
+      $("autoMode").value = "on";
+      runSimulation();
+    }
+
+    document.querySelectorAll(".auto").forEach((el) => {
+      el.addEventListener("input", schedule);
+      el.addEventListener("change", schedule);
+    });
+
+    $("autoMode").addEventListener("change", () => {
+      if ($("autoMode").value === "on") {
+        runSimulation();
+      }
+    });
+
+    runSimulation();
+  </script>
 </body>
 </html>
