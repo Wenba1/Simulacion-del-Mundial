@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Simulación de Cola - Mundial Qatar 2022</title>
+<style>
+:root{--p:#7a1231;--pd:#4c0b1e;--g:#667085;--b:#f5f7fb;--l:#e4e7ec;--a:#c79a3b}
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}body{margin:0;background:var(--b);color:#132238}
+header{background:linear-gradient(135deg,var(--pd),var(--p));color:white;text-align:center;padding:30px 16px}
+header h1{margin:0 0 8px;font-size:30px}header p{margin:0;opacity:.94}
+main{width:min(1240px,94%);margin:22px auto 40px}.noteTop{background:#fff4d6;border:1px solid #f1d28a;border-radius:14px;padding:14px 16px;margin-bottom:18px;color:#664d03;font-size:14px;line-height:1.45}
+.grid{display:grid;grid-template-columns:.95fr 1.25fr;gap:18px;align-items:start}.card{background:white;border:1px solid var(--l);border-radius:18px;padding:18px;box-shadow:0 8px 24px rgba(16,24,40,.06)}
+h2{margin:0 0 12px;color:var(--pd);font-size:21px}h3{margin:18px 0 9px;color:var(--pd);font-size:16px}
+p.desc{line-height:1.58;color:var(--g);font-size:14px;margin:0}.form{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:10px}
+label{font-size:13px;color:var(--g);display:block;margin-bottom:5px}input,select{width:100%;padding:10px;border:1px solid var(--l);border-radius:11px;font-size:14px;background:white}
+input:focus,select:focus{outline:2px solid #eab7c9;border-color:var(--p)}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+button{border:0;border-radius:11px;padding:11px 15px;background:var(--p);color:white;cursor:pointer;font-weight:bold}button.sec{background:#344054}button.gold{background:var(--a);color:#1f1600}
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:4px 0 16px}.metric{background:#fbe8ef;border:1px solid #f3c7d6;border-radius:15px;padding:14px}
+.metric span{display:block;font-size:12px;color:var(--g);margin-bottom:5px}.metric strong{font-size:21px;color:var(--pd)}
+.tableWrap{width:100%;overflow-x:auto;margin-top:14px;border:1px solid var(--l);border-radius:14px}table{width:100%;min-width:760px;border-collapse:collapse;background:white}
+th,td{padding:10px;border-bottom:1px solid var(--l);text-align:center;font-size:13px}th{background:#fafafa;color:#344054}.status{padding:12px 14px;border-radius:12px;font-weight:bold;margin-top:14px;line-height:1.35}
+.ok{background:#dcfae6;color:#067647}.warn{background:#fef0c7;color:#b54708}.bad{background:#fee4e2;color:#b42318}
+.bars{display:grid;gap:14px;margin-top:16px}.barRow{display:grid;grid-template-columns:170px 1fr 74px;gap:10px;align-items:center;font-size:13px}
+.track{height:17px;background:#eef2f6;border:1px solid var(--l);border-radius:20px;overflow:hidden}.fill{height:100%;width:0;background:var(--p);transition:.25s}.fill.alt{background:var(--a)}
+.pill{display:inline-block;background:#eef4ff;color:#1849a9;border:1px solid #c7d7fe;padding:5px 9px;border-radius:999px;font-size:12px;margin:8px 4px 0 0;font-weight:bold}
+.small{font-size:13px;color:var(--g);line-height:1.45;margin-top:10px}.err{color:#b42318}
+footer{text-align:center;color:var(--g);padding:24px;font-size:13px}
+@media(max-width:980px){.grid{grid-template-columns:1fr}.summary{grid-template-columns:1fr 1fr}}@media(max-width:620px){header h1{font-size:23px}.form,.summary{grid-template-columns:1fr}.barRow{grid-template-columns:1fr}}
+@media print{header,.actions,.noteTop{display:none}body{background:white}main{width:100%;margin:0}.card{box-shadow:none;page-break-inside:avoid}}
+</style>
+</head>
+<body>
+<header>
+<h1>Simulación de Línea de Espera: Mundial Qatar 2022</h1>
+<p>Ingreso de hinchas al estadio antes de un partido: comparación con 2 y 3 puntos de control.</p>
+</header>
+<main>
+<div class="noteTop"><b>Caso histórico:</b> se trabaja con el Mundial Qatar 2022 para que el informe no dependa de un evento futuro. Al cambiar cualquier dato, se actualizan automáticamente los indicadores, la tabla y la interpretación.</div>
+<section class="grid">
+<article class="card">
+<h2>Contexto del caso</h2>
+<p class="desc">El sistema representa una puerta de ingreso a un estadio durante los minutos previos a un partido del Mundial Qatar 2022. Cada hincha pasa por validación de entrada, control de seguridad y acceso por torniquete.</p>
+<span class="pill">Línea de espera</span><span class="pill">Múltiples servidores</span><span class="pill">Datos simulados</span>
+<h3>Datos generales</h3>
+<div class="form">
+<div><label>Tiempo observado (min)</label><input id="duration" class="auto" value="60"></div>
+<div><label>Cantidad de hinchas</label><input id="fans" class="auto" value="40"></div>
+<div><label>Semilla</label><input id="seed" class="auto" value="2022"></div>
+</div>
+<h3>Tiempos entre llegadas, distribución triangular</h3>
+<div class="form">
+<div><label>Mínimo</label><input id="arrMin" class="auto" value="0,50"></div>
+<div><label>Más probable</label><input id="arrMode" class="auto" value="1,35"></div>
+<div><label>Máximo</label><input id="arrMax" class="auto" value="2,20"></div>
+</div>
+<h3>Tiempos de servicio, distribución triangular</h3>
+<div class="form">
+<div><label>Mínimo</label><input id="servMin" class="auto" value="1,80"></div>
+<div><label>Más probable</label><input id="servMode" class="auto" value="2,50"></div>
+<div><label>Máximo</label><input id="servMax" class="auto" value="4,50"></div>
+</div>
+<h3>Escenarios</h3>
+<div class="form">
+<div><label>Escenario A</label><input id="serversA" class="auto" value="2"></div>
+<div><label>Escenario B</label><input id="serversB" class="auto" value="3"></div>
+<div><label>Actualización</label><select id="autoMode"><option value="on" selected>Automática</option><option value="off">Manual</option></select></div>
+</div>
+<div class="actions"><button onclick="runSimulation()">Actualizar simulación</button><button class="sec" onclick="loadBaseCase()">Restaurar datos base</button><button class="gold" onclick="window.print()">Imprimir / guardar PDF</button></div>
+<p class="small">La distribución triangular permite definir un valor mínimo, uno más probable y uno máximo. Es útil cuando se trabaja con datos simulados para un estudio académico.</p>
+<p id="errorBox" class="small err"></p>
+</article>
+<article class="card">
+<h2>Indicadores principales</h2>
+<div class="summary">
+<div class="metric"><span>λ llegada</span><strong id="lambda">0,00</strong></div>
+<div class="metric"><span>μ servicio</span><strong id="mu">0,00</strong></div>
+<div class="metric"><span>Hinchas simulados</span><strong id="nFans">0</strong></div>
+<div class="metric"><span>Prom. servicio</span><strong id="avgService">0,00</strong></div>
+</div>
+<h3>Comparación de escenarios</h3>
+<div class="tableWrap"><table><thead><tr><th>Indicador</th><th id="headA">k = 2 servidores</th><th id="headB">k = 3 servidores</th></tr></thead><tbody id="comparisonBody"></tbody></table></div>
+<div id="decisionBox"></div>
+<h3>Gráfico comparativo</h3>
+<div class="bars">
+<div class="barRow"><span id="labelWqA">Espera Wq A</span><div class="track"><div id="barWqA" class="fill"></div></div><b id="barWqAText">0,00</b></div>
+<div class="barRow"><span id="labelWqB">Espera Wq B</span><div class="track"><div id="barWqB" class="fill alt"></div></div><b id="barWqBText">0,00</b></div>
+<div class="barRow"><span id="labelRhoA">Utilización A</span><div class="track"><div id="barRhoA" class="fill"></div></div><b id="barRhoAText">0%</b></div>
+<div class="barRow"><span id="labelRhoB">Utilización B</span><div class="track"><div id="barRhoB" class="fill alt"></div></div><b id="barRhoBText">0%</b></div>
+</div>
+</article>
+</section>
+<section class="card" style="margin-top:18px">
+<h2>Tabla simulada de hinchas</h2>
+<p class="desc">La tabla corresponde al Escenario A. Al cambiar los datos, se recalculan llegada, servicio, servidor, inicio, final, espera y tiempo total.</p>
+<div class="tableWrap"><table><thead><tr><th>Hincha</th><th>Llegada</th><th>Servicio</th><th>Servidor</th><th>Inicio</th><th>Final</th><th>Espera Wq</th><th>Tiempo W</th></tr></thead><tbody id="dataBody"></tbody></table></div>
+</section>
+<section class="card" style="margin-top:18px">
+<h2>Interpretación automática para el informe</h2>
+<p id="interpretation" class="desc"></p>
+</section>
+</main>
+<footer>Simulación académica para Investigación Operativa II. Caso histórico: ingreso de hinchas durante el Mundial Qatar 2022.</footer>
+<script>
+let timer=null;
+const $=id=>document.getElementById(id);
+function n(id){return Number(String($(id).value).trim().replace(",","."))}
+function f(x,d=2){return Number.isFinite(x)?Number(x).toFixed(d).replace(".",","):"0,00"}
+function pct(x){return Number.isFinite(x)?(x*100).toFixed(2).replace(".",",")+"%":"0%"}
+function sr(seed){let x=Math.sin(seed)*10000;return x-Math.floor(x)}
+function rng(s){let seed=s;return()=>sr(++seed)}
+function tri(min,mode,max,r){let u=r(),c=(mode-min)/(max-min);return u<c?min+Math.sqrt(u*(max-min)*(mode-min)):max-Math.sqrt((1-u)*(max-min)*(max-mode))}
+function params(){
+ let p={duration:n("duration"),fans:Math.floor(n("fans")),seed:n("seed"),arrMin:n("arrMin"),arrMode:n("arrMode"),arrMax:n("arrMax"),servMin:n("servMin"),servMode:n("servMode"),servMax:n("servMax"),serversA:n("serversA"),serversB:n("serversB")}, e=[];
+ if(!(p.duration>0))e.push("El tiempo observado debe ser mayor a 0.");
+ if(!(p.fans>0))e.push("La cantidad de hinchas debe ser mayor a 0.");
+ if(!Number.isFinite(p.seed))e.push("La semilla debe ser numérica.");
+ if(!(p.arrMin>0&&p.arrMode>=p.arrMin&&p.arrMax>=p.arrMode&&p.arrMax>p.arrMin))e.push("En llegadas debe cumplirse: mínimo ≤ más probable ≤ máximo.");
+ if(!(p.servMin>0&&p.servMode>=p.servMin&&p.servMax>=p.servMode&&p.servMax>p.servMin))e.push("En servicio debe cumplirse: mínimo ≤ más probable ≤ máximo.");
+ if(!(Number.isInteger(p.serversA)&&p.serversA>=1))e.push("Escenario A debe ser entero mayor o igual a 1.");
+ if(!(Number.isInteger(p.serversB)&&p.serversB>=1))e.push("Escenario B debe ser entero mayor o igual a 1.");
+ $("errorBox").textContent=e.join(" "); return e.length?null:p;
+}
+function makeData(p){
+ let r=rng(p.seed), data=[], arrival=0;
+ for(let i=1;i<=p.fans;i++){
+  if(i>1)arrival+=tri(p.arrMin,p.arrMode,p.arrMax,r);
+  let service=tri(p.servMin,p.servMode,p.servMax,r);
+  if(arrival<=p.duration)data.push({id:i,arrival,service});
+ }
+ return data;
+}
+function sim(data,k,duration){
+ let end=Array(k).fill(0),rows=[],tw=0,tsys=0,ts=0;
+ data.forEach(fan=>{
+  let s=0; for(let i=1;i<k;i++)if(end[i]<end[s])s=i;
+  let start=Math.max(fan.arrival,end[s]), finish=start+fan.service, wait=start-fan.arrival, sys=finish-fan.arrival;
+  end[s]=finish; tw+=wait; tsys+=sys; ts+=fan.service;
+  rows.push({id:fan.id,arrival:fan.arrival,service:fan.service,server:s+1,start,finish,wait,sys});
+ });
+ let m=data.length||1, avg=ts/m, lambda=data.length/duration, mu=avg?1/avg:0, wq=tw/m, w=tsys/m, lq=lambda*wq, l=lambda*w, rho=mu?lambda/(k*mu):0;
+ return {k,rows,n:data.length,avg,lambda,mu,wq,w,lq,l,rho};
+}
+function render(A,B){
+ $("lambda").textContent=f(A.lambda,4); $("mu").textContent=f(A.mu,4); $("nFans").textContent=A.n; $("avgService").textContent=f(A.avg,2);
+ $("headA").textContent="k = "+A.k+" servidores"; $("headB").textContent="k = "+B.k+" servidores";
+ let rows=[["Hinchas atendidos",A.n,B.n],["Espera promedio Wq (min)",f(A.wq,4),f(B.wq,4)],["Tiempo promedio W (min)",f(A.w,4),f(B.w,4)],["N° promedio en cola Lq",f(A.lq,4),f(B.lq,4)],["N° promedio en sistema L",f(A.l,4),f(B.l,4)],["Utilización ρ",pct(A.rho),pct(B.rho)]];
+ $("comparisonBody").innerHTML=rows.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("");
+ $("dataBody").innerHTML=A.rows.map(r=>`<tr><td>${r.id}</td><td>${f(r.arrival,2)}</td><td>${f(r.service,2)}</td><td>${r.server}</td><td>${f(r.start,2)}</td><td>${f(r.finish,2)}</td><td>${f(r.wait,2)}</td><td>${f(r.sys,2)}</td></tr>`).join("");
+ let maxWq=Math.max(A.wq,B.wq,.01); $("barWqA").style.width=Math.min(100,A.wq/maxWq*100)+"%"; $("barWqB").style.width=Math.min(100,B.wq/maxWq*100)+"%"; $("barRhoA").style.width=Math.min(100,A.rho*100)+"%"; $("barRhoB").style.width=Math.min(100,B.rho*100)+"%";
+ $("labelWqA").textContent="Espera Wq con k="+A.k; $("labelWqB").textContent="Espera Wq con k="+B.k; $("labelRhoA").textContent="Utilización k="+A.k; $("labelRhoB").textContent="Utilización k="+B.k;
+ $("barWqAText").textContent=f(A.wq,2); $("barWqBText").textContent=f(B.wq,2); $("barRhoAText").textContent=(A.rho*100).toFixed(1).replace(".",",")+"%"; $("barRhoBText").textContent=(B.rho*100).toFixed(1).replace(".",",")+"%";
+ let cls="ok", txt="";
+ if(A.rho>=1){cls="bad";txt=`Conclusión: con ${A.k} servidores el sistema está saturado. Se recomienda aumentar los puntos de control.`}
+ else if(A.rho>=.85&&B.wq<A.wq){cls="warn";txt=`Conclusión: con ${A.k} servidores el sistema funciona, pero está muy cargado. Conviene habilitar ${B.k} servidores en hora pico.`}
+ else if(B.wq<A.wq){txt=`Conclusión: el escenario con ${B.k} servidores reduce la espera y puede usarse en momentos de mayor llegada.`}
+ else{txt=`Conclusión: el escenario con ${A.k} servidores es suficiente para los datos ingresados.`}
+ if(B.rho>=1){cls="bad";txt=`Conclusión: incluso con ${B.k} servidores el sistema se satura. Se debe aumentar capacidad o reducir tiempos de servicio.`}
+ $("decisionBox").innerHTML=`<div class="status ${cls}">${txt}</div>`;
+ let imp=A.wq===0?0:((A.wq-B.wq)/A.wq)*100;
+ $("interpretation").textContent=`En la simulación del ingreso de hinchas durante un partido del Mundial Qatar 2022, el escenario con ${A.k} servidores presenta una espera promedio en cola Wq de ${f(A.wq,4)} minutos, mientras que el escenario con ${B.k} servidores presenta una espera promedio de ${f(B.wq,4)} minutos. La utilización del sistema pasa de ${pct(A.rho)} a ${pct(B.rho)}. La variación aproximada de la espera es de ${f(Math.abs(imp),2)}%. Con estos resultados, la decisión operativa recomendada es habilitar más puntos de control en periodos de mayor afluencia, evitando filas extensas y mejorando el flujo de ingreso al estadio.`;
+}
+function runSimulation(){let p=params(); if(!p)return; let d=makeData(p), A=sim(d,p.serversA,p.duration), B=sim(d,p.serversB,p.duration); render(A,B)}
+function schedule(){if($("autoMode").value!=="on")return; clearTimeout(timer); timer=setTimeout(runSimulation,160)}
+function loadBaseCase(){["duration","fans","seed","arrMin","arrMode","arrMax","servMin","servMode","servMax","serversA","serversB"].forEach((id,i)=>$(id).value=["60","40","2022","0,50","1,35","2,20","1,80","2,50","4,50","2","3"][i]);$("autoMode").value="on";runSimulation()}
+document.querySelectorAll(".auto").forEach(x=>{x.addEventListener("input",schedule);x.addEventListener("change",schedule)});
+$("autoMode").addEventListener("change",()=>{if($("autoMode").value==="on")runSimulation()});
+runSimulation();
+</script>
+</body>
+</html>
